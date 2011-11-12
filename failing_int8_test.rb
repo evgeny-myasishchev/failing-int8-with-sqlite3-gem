@@ -1,4 +1,4 @@
-require 'test_helper'
+require File.expand_path('../test_helper', __FILE__)
 require 'sqlite3/database'
 
 class TestFailingInt8Value < Test::Unit::TestCase
