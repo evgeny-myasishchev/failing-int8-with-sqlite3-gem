@@ -1,36 +1,40 @@
 = Ruby test and native sample to demonstrate bignums corruption issue when using sqlite3 gem
 
+The issue is reproduced at Mac OSX 10.6 and 10.7. The issue is NOT reproduced at 32 bit ubuntu and 32 bit Windows 7.
+
 == DESCRIPTION
 
 Some bignums are got corrupted when binding them as parameters.	
 
-The issue is reproduced at Mac OSX 10.6 and 10.7. 
-The issue is NOT reproduced at 32 bit ubuntu and 32 bit Windows 7.
-
 Suppose we have schema like:
-	CREATE TABLE "employees" ("token" integer(8), "name" varchar(20) NOT NULL)
 
-When executing SQL like: 
-	INSERT INTO Employees(name, token) VALUES('employee-1', 4907021672125087844)
-	
+  CREATE TABLE "employees" ("token" integer(8), "name" varchar(20) NOT NULL)
+
+When executing SQL like:
+
+  INSERT INTO Employees(name, token) VALUES('employee-1', 4907021672125087844)
+
 The result will be as expected. Token's value will be: 4907021672125087844
 
 When doing the same using parameters binding like:
-	db.execute "INSERT INTO Employees(name, token) VALUES('employee-1', ?)", [4907021672125087844]
-	
+
+  db.execute "INSERT INTO Employees(name, token) VALUES('employee-1', ?)", [4907021672125087844]
+
 Token's value will be: 4907021672125087744 (note last last three digits expected: 844, actual 744)
 
 == Running tests
 
 Ruby test is at: ruby/failing_int8_test.rb. You will find two tests there: 
+
 * test_direct_sql - this one will pass
 * test_with_parameters_binding - this one fails
 
 A very simple native C sample that uses parameters binding "sqlite3_bind_int64"  is at native folder.
 
 To run it:
-	$ cd native
-	$ make clean && make && ./main
-	$ sqlite3 db/test.sqlite "select token from employees"
+
+  * cd native
+  * make clean && make && ./main
+  * sqlite3 db/test.sqlite "select token from employees"
 	
 The result will be as expected: 4907021672125087844. This proves that the issue is in the sqlite3 gem itself.
