@@ -10,13 +10,15 @@ class TestFailingInt8Value < Test::Unit::TestCase
       database_path,
       :results_as_hash => true
     )
-    db.execute %(CREATE TABLE "employees" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "token" integer(8), "name" varchar(20) NOT NULL))
+    db.execute %(CREATE TABLE "employees" ("token" integer(8), "name" varchar(20) NOT NULL))
     db
   end
   
   def test_direct_sql
     token_will_pass = 4907021672125087744
     token_will_fail = 4907021672125087744 + 100
+    
+    puts token_will_pass.class
     
     DB.execute "DELETE FROM Employees"
     DB.execute "INSERT INTO Employees(name, token) VALUES('employee-1', #{token_will_pass})"
